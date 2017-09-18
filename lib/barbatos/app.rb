@@ -44,6 +44,7 @@ module Barbatos
       end
 
       def route(request_method, path, &block)
+        @router ||= {}
         route_text = build_route(request_method, path)
         @router[route_text] = block
       end
