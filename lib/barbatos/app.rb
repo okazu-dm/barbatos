@@ -15,13 +15,13 @@ module Barbatos
     end
 
     class << self
-      def render_text(text)
-        Rack::Response.new(text.to_s)
+      def render_text(text, status: 200, header: {})
+        Rack::Response.new(text.to_s, status, header)
       end
 
-      def render(file, variables)
+      def render(file, variables, status: 200, header: {})
         template = Tilt.new(file)
-        render_text(template.render(self, variables))
+        render_text(template.render(self, variables), status: status, header: header)
       end
 
       # rubocop:disable Style/SingleLineMethods, Style/EmptyLineBetweenDefs

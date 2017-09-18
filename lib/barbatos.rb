@@ -6,3 +6,5 @@ module Barbatos
 end
 
 extend Barbatos::Delegator
+
+at_exit {Rack::Server.start :app => Barbatos::App.new}
