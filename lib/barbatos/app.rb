@@ -25,10 +25,10 @@ module Barbatos
       end
 
       # rubocop:disable Style/SingleLineMethods, Style/EmptyLineBetweenDefs
-      def get(path, &block) route 'GET', path, &block end
-      def post(path, &block) route 'POST', path, &block end
-      def put(path, &block) route 'GET', path, &block end
-      def delete(path, &block) route 'GET', path, &block end
+      def get(path, &block)     route 'GET', path, &block end
+      def post(path, &block)    route 'POST', path, &block end
+      def put(path, &block)     route 'GET', path, &block end
+      def delete(path, &block)  route 'GET', path, &block end
       # rubocop:enable all
 
       %w(401 404 500).each do |status|
@@ -52,5 +52,11 @@ module Barbatos
         [request_method, path].join('#')
       end
     end
+  end
+
+  module Delegator
+    extend Forwardable
+    delegate [:get, :post, :put, :delete] => App
+    delegate [:render, :render_text] => App
   end
 end

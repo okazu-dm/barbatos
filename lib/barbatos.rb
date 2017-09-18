@@ -4,3 +4,5 @@ require 'barbatos/app'
 module Barbatos
   # Your code goes here...
 end
+
+extend Barbatos::Delegator
