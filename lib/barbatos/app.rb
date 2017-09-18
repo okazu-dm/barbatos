@@ -1,11 +1,10 @@
 require 'tilt'
 require 'rack'
-require 'pp'
-require 'pry'
+require 'forwardable'
 
 module Barbatos
   class App
-    @@router = {}
+    @router = {}
 
     def initialize
     end
@@ -17,7 +16,7 @@ module Barbatos
 
     class << self
       def render_text(text)
-        [200, {}, [text.to_s]]
+        Rack::Response.new(text.to_s)
       end
 
       def render(file, variables)
@@ -29,7 +28,7 @@ module Barbatos
       def get(path, &block) route 'GET', path, &block end
       def post(path, &block) route 'POST', path, &block end
       def put(path, &block) route 'GET', path, &block end
-      def sdelete(path, &block) route 'GET', path, &block end
+      def delete(path, &block) route 'GET', path, &block end
       # rubocop:enable all
 
       %w(401 404 500).each do |status|
@@ -39,14 +38,14 @@ module Barbatos
       def process(req)
         path = req.path
         request_method = req.request_method
-        action = @@router[build_route(request_method, path)]
+        action = @router[build_route(request_method, path)]
         return res_404 if action.nil?
         action.call(req)
       end
 
       def route(request_method, path, &block)
         route_text = build_route(request_method, path)
-        @@router[route_text] = block
+        @router[route_text] = block
       end
 
       def build_route(request_method, path)
