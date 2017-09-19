@@ -1,6 +1,7 @@
 require 'tilt'
 require 'rack'
 require 'forwardable'
+require 'barbatos/context'
 
 module Barbatos
   class App
@@ -30,6 +31,8 @@ module Barbatos
       def put(path, &block)     route 'GET', path, &block end
       def delete(path, &block)  route 'GET', path, &block end
       # rubocop:enable all
+
+      # def res_404(text = '') Rack::Response.new(text.to_s, 404) end
 
       %w(401 404 500).each do |status|
         define_method("res_#{status}") { [status.to_i, {}, []] }
