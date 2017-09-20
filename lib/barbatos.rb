@@ -2,7 +2,6 @@ require 'barbatos/version'
 require 'barbatos/app'
 
 module Barbatos
-  # Your code goes here...
   @app_filepath = File.expand_path caller(1)
                   .map { |path| path.split(':')[0] }
                   .reject { |path| /barbatos|kernel_require/ =~ path }.first
