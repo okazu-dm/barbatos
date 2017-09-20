@@ -11,13 +11,12 @@ module Barbatos
     end
 
     def call(env)
-      req = Rack::Request.new(env)
-      self.class.process(req)
+      self.class.process(env)
     end
 
     class << self
       def render_text(text, status: 200, header: {})
-        Rack::Response.new(text.to_s, status, header)
+        @context.response = Rack::Response.new(text.to_s, status, header)
       end
 
       def render(file, variables, status: 200, header: {})
@@ -32,18 +31,15 @@ module Barbatos
       def delete(path, &block)  route 'GET', path, &block end
       # rubocop:enable all
 
-      # def res_404(text = '') Rack::Response.new(text.to_s, 404) end
-
-      %w(401 404 500).each do |status|
-        define_method("res_#{status}") { [status.to_i, {}, []] }
-      end
-
-      def process(req)
-        path = req.path
-        request_method = req.request_method
+      def process(env)
+        @env = env
+        @context = Barbatos::Context.new(env)
+        path = @context.request.path
+        request_method = @context.request.request_method
         action = @router[build_route(request_method, path)]
         return res_404 if action.nil?
-        action.call(req)
+        action.call(@context)
+        @context.response
       end
 
       def route(request_method, path, &block)
