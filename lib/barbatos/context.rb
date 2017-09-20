@@ -20,6 +20,11 @@ module Barbatos
       status!(401)
     end
 
+    def redirect(location, status_code = 302)
+      response.redirect(location, status_code)
+      self
+    end
+
     def status!(status_code)
       response.status = status_code
       self
@@ -30,6 +35,5 @@ module Barbatos
       self
     end
 
-    delegate [:redirect] => :@response
   end
 end

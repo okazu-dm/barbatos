@@ -21,4 +21,12 @@ class ContextTest < Minitest::Test
   def test_body
     assert_equal 'hello', @context.body!('hello').response.body
   end
+
+  def test_redirect
+    response = @context.redirect('/redirected').response
+    assert_equal '/redirected', response.headers['location'], 'redirect path'
+    assert_equal 302, response.status, 'default status code is 302'
+    response = @context.redirect('/redirected', 301).response
+    assert_equal 301, response.status, 'set status code'
+  end
 end
