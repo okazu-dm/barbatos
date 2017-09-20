@@ -18,4 +18,10 @@ class AppTest < MiniTest::Test
     assert_equal 'hello', response.body
   end
 
+  def test_error_handling
+    request = Rack::MockRequest.new(@app)
+    response = request.get('/not_defined')
+    assert_equal 404, response.status, 'Not found'
+  end
+
 end

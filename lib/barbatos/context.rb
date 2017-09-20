@@ -34,6 +34,5 @@ module Barbatos
       response.body = content
       self
     end
-
   end
 end
