@@ -34,5 +34,7 @@ module Barbatos
       response.body = content
       self
     end
+
+    delegate [:status, :body] => :@response
   end
 end
