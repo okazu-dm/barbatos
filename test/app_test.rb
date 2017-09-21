@@ -8,7 +8,7 @@ class AppTest < MiniTest::Test
   end
 
   def setup
-    @app = TestWebApp.new
+    @app = TestWebApp.instance
   end
 
   def test_get

@@ -32,6 +32,6 @@ end
 extend Barbatos::Delegator
 
 at_exit do
-  Rack::Server.start app: Barbatos::App.new if
+  Rack::Server.start app: Barbatos::App.instance if
     Barbatos.invoke_by_appfile? && !Barbatos.test?
 end
