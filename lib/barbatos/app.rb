@@ -7,6 +7,7 @@ require 'singleton'
 module Barbatos
   class App
     include Singleton
+    attr_reader :request, :response
 
     def initialize
       self.class.show_routes
@@ -21,9 +22,15 @@ module Barbatos
       @context = Barbatos::Context.new(env)
       path = @context.request.path
       request_method = @context.request.request_method
-      return @context.not_found.response unless
-       respond_to?(Barbatos::App.build_route(request_method, path))
-      send(Barbatos::App.build_route(request_method, path), @context)
+
+      action = Barbatos::App.build_route(request_method, path)
+      return @context.not_found.response unless respond_to?(action)
+
+      if method(action).arity > 0
+        send(action, @context)
+      else
+        send(action)
+      end
       @context.response
     end
 

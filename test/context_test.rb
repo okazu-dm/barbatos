@@ -34,7 +34,4 @@ class ContextTest < Minitest::Test
     assert_equal 400, @context.status
   end
 
-  def test_body
-    assert_equal 'hello', @context.body!('hello').body
-  end
 end

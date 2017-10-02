@@ -5,6 +5,10 @@ class AppTest < MiniTest::Test
     get '/' do |env|
       render_text 'hello'
     end
+
+    get '/no_arity' do
+      render_text 'no arity'
+    end
   end
 
   def setup
@@ -16,6 +20,9 @@ class AppTest < MiniTest::Test
     response = request.get('/')
     assert response.ok?
     assert_equal 'hello', response.body
+
+    response = request.get('/no_arity')
+    assert response.ok?
   end
 
   def test_error_handling
