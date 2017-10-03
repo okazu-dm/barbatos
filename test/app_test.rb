@@ -2,12 +2,8 @@ require 'test_helper'
 
 class AppTest < MiniTest::Test
   class TestWebApp < Barbatos::App
-    get '/' do |env|
+    get '/' do
       render_text 'hello'
-    end
-
-    get '/no_arity' do
-      render_text 'no arity'
     end
   end
 
@@ -20,9 +16,6 @@ class AppTest < MiniTest::Test
     response = request.get('/')
     assert response.ok?
     assert_equal 'hello', response.body
-
-    response = request.get('/no_arity')
-    assert response.ok?
   end
 
   def test_error_handling
