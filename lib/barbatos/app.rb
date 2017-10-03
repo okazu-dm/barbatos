@@ -65,12 +65,6 @@ module Barbatos
       def delete(path, &block)  route 'GET', path, &block end
       # rubocop:enable all
 
-      # def res_404(text = '') Rack::Response.new(text.to_s, 404) end
-
-      %w(401 404 500).each do |status|
-        define_method("res_#{status}") { [status.to_i, {}, []] }
-      end
-
       def route(request_method, path, &block)
         route_text = build_route(request_method, path)
         router[route_text] = true # just for show routes
