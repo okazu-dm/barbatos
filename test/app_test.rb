@@ -1,14 +1,16 @@
 require 'test_helper'
 
 class AppTest < MiniTest::Test
+  def setup
+    TestWebApp.run(TestWebApp.instance)
+    @app = TestWebApp.builder.to_app
+  end
+
   class TestWebApp < Barbatos::App
+    use Barbatos::TestMiddleware
     get '/' do
       render_text 'hello'
     end
-  end
-
-  def setup
-    @app = TestWebApp.instance
   end
 
   def test_get
@@ -24,4 +26,9 @@ class AppTest < MiniTest::Test
     assert_equal 404, response.status, 'Not found'
   end
 
+  def test_builder
+    request = Rack::MockRequest.new(@app)
+    response = request.get('/')
+    assert_equal '1', response.header[BARBATOS_TEST_HEADER]
+  end
 end

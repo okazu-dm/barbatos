@@ -58,6 +58,22 @@ module Barbatos
         instance.call(env)
       end
 
+      def use(*args)
+        builder.use(*args)
+      end
+
+      def run(*args)
+        builder.run(*args)
+      end
+
+      def builder
+        @builder ||= Rack::Builder.new
+      end
+
+      def to_app
+        builder.to_app
+      end
+
       # rubocop:disable Style/SingleLineMethods, Style/EmptyLineBetweenDefs
       def get(path, &block)     route 'GET', path, &block end
       def post(path, &block)    route 'POST', path, &block end
@@ -80,14 +96,11 @@ module Barbatos
         puts 'routing: '
         puts router.keys.map { |r| r.gsub('#', ' => ') }
       end
-
-      def init
-      end
     end
   end
 
   module Delegator
     extend Forwardable
-    delegate [:get, :post, :put, :delete] => App
+    delegate [:get, :post, :put, :delete, :use, :run] => App
   end
 end
