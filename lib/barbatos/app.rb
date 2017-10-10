@@ -56,6 +56,7 @@ module Barbatos
     end
 
     class << self
+      extend Forwardable
       def router
         @router ||= Barbatos::Router.new
       end
@@ -64,20 +65,8 @@ module Barbatos
         instance.call(env)
       end
 
-      def use(*args)
-        builder.use(*args)
-      end
-
-      def run(*args)
-        builder.run(*args)
-      end
-
       def builder
         @builder ||= Rack::Builder.new
-      end
-
-      def to_app
-        builder.to_app
       end
 
       # rubocop:disable Style/SingleLineMethods, Style/EmptyLineBetweenDefs
@@ -104,6 +93,8 @@ module Barbatos
         return if Barbatos.test?
         router.show_routes
       end
+
+      delegate [:use, :run, :to_app] => :builder
     end
   end
 
