@@ -10,10 +10,6 @@ module Barbatos
     include Singleton
     attr_reader :request, :response
 
-    def initialize
-      self.class.show_routes
-    end
-
     def call(env)
       process(env)
     end
@@ -58,6 +54,11 @@ module Barbatos
     class << self
       extend Forwardable
 
+      def new(*args)
+        show_routes
+        super
+      end
+
       def clear!
         @router = nil
         @builder = nil
@@ -96,8 +97,7 @@ module Barbatos
       end
 
       def show_routes
-        return if Barbatos.test?
-        router.show_routes
+        router.show_routes if Barbatos.dev?
       end
 
       private
