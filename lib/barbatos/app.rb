@@ -1,8 +1,9 @@
 require 'tilt'
 require 'rack'
+require 'singleton'
 require 'forwardable'
 require 'barbatos/response'
-require 'singleton'
+require 'barbatos/router'
 
 module Barbatos
   class App
@@ -22,14 +23,19 @@ module Barbatos
       @request = Rack::Request.new(env)
       @response = Barbatos::Response.new
 
+      call_action_method
+
+      response
+    end
+
+    def call_action_method
       path = request.path
       request_method = request.request_method
 
-      action = Barbatos::App.build_route(request_method, path)
-      return response.not_found unless respond_to?(action)
-
-      send(action)
-      response
+      # fetch unbound method
+      action = router.fetch_action(request_method, path)
+      return response.not_found if action.nil?
+      action.bind(self).call
     end
 
     def render_text(text, status: 200, header: {})
@@ -51,7 +57,7 @@ module Barbatos
 
     class << self
       def router
-        @router ||= {}
+        @router ||= Barbatos::Router.new
       end
 
       def call(env)
@@ -82,19 +88,21 @@ module Barbatos
       # rubocop:enable all
 
       def route(request_method, path, &block)
-        route_text = build_route(request_method, path)
-        router[route_text] = true # just for show routes
-        define_method route_text, block
+        unbound_insance_method = generate_unbound_method(&block)
+        router.route(request_method, path, unbound_insance_method)
       end
 
-      def build_route(request_method, path)
-        [request_method, path].join('#')
+      def generate_unbound_method(&block)
+        method_name = "__#{self}__unbound_method__"
+        define_method(method_name, &block)
+        unbound_method = instance_method(method_name)
+        remove_method(method_name)
+        return unbound_method
       end
 
       def show_routes
         return if Barbatos.test?
-        puts 'routing: '
-        puts router.keys.map { |r| r.gsub('#', ' => ') }
+        router.show_routes
       end
     end
   end
