@@ -57,6 +57,12 @@ module Barbatos
 
     class << self
       extend Forwardable
+
+      def clear!
+        @router = nil
+        @builder = nil
+      end
+
       def router
         @router ||= Barbatos::Router.new
       end
@@ -92,6 +98,14 @@ module Barbatos
       def show_routes
         return if Barbatos.test?
         router.show_routes
+      end
+
+      private
+
+      def inherited(klass)
+        super
+        # reset routing and middleware stack
+        klass.clear!
       end
 
       delegate [:use, :run, :to_app] => :builder

@@ -1,9 +1,18 @@
 require 'test_helper'
 
+get '/reseted' do
+  render_text 'only_in_base_class'
+end
+
 class AppTest < MiniTest::Test
   def setup
     TestWebApp.run(TestWebApp.instance)
     @app = TestWebApp.builder.to_app
+    Barbatos::App.run(Barbatos::App.instance)
+    @base_app = Barbatos::App.builder.to_app
+
+    @request = Rack::MockRequest.new(@app)
+    @base_class_request = Rack::MockRequest.new(@base_app)
   end
 
   class TestWebApp < Barbatos::App
@@ -14,21 +23,29 @@ class AppTest < MiniTest::Test
   end
 
   def test_get
-    request = Rack::MockRequest.new(@app)
-    response = request.get('/')
+    response = @request.get('/')
     assert response.ok?
     assert_equal 'hello', response.body
   end
 
+  # check isolation between Base class and Subclass
+  def test_reset
+    response = @request.get('/reseted')
+    assert !response.ok?
+    assert_equal 404, response.status, 'Base class routing should be reset'
+
+    base_class_response = @base_class_request.get('/reseted')
+    assert base_class_response.ok?
+    assert_equal 'only_in_base_class', base_class_response.body
+  end
+
   def test_error_handling
-    request = Rack::MockRequest.new(@app)
-    response = request.get('/not_defined')
+    response = @request.get('/not_defined')
     assert_equal 404, response.status, 'Not found'
   end
 
   def test_builder
-    request = Rack::MockRequest.new(@app)
-    response = request.get('/')
+    response = @request.get('/')
     assert_equal '1', response.header[BARBATOS_TEST_HEADER]
   end
 end
