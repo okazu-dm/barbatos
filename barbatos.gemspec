@@ -9,17 +9,10 @@ Gem::Specification.new do |spec|
   spec.authors       = ['okazu-dm']
   spec.email         = ['uhavetwocows@gmail.com']
 
-  spec.summary       = 'TODO: Write a short summary'
-  spec.description   = 'TODO: Write a longer description or delete this line.'
-  spec.homepage      = "TODO: Put your gem's website or public repo URL here."
+  spec.summary       = 'Sample WAF Code'
+  spec.description   = 'Just study of Web Application Framework (not suitable for use)'
+  spec.homepage      = 'https://github.com/okazu-dm/barbatos'
   spec.license       = 'MIT'
-
-  if spec.respond_to?(:metadata)
-    spec.metadata['allowed_push_host'] = "TODO: Set to 'http://mygemserver.com'"
-  else
-    raise 'RubyGems 2.0 or newer is required to protect against ' \
-      'public gem pushes.'
-  end
 
   spec.files = `git ls-files -z`.split('\x0').reject do |f|
     f.match(%r{^(test|spec|features)/})
@@ -32,5 +25,4 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'rake', '~> 10.0'
   spec.add_development_dependency 'minitest', '~> 5.0'
   spec.add_development_dependency 'tilt', '~> 1.4'
-  spec.add_development_dependency 'sequel', '~> 5.0.0'
 end
