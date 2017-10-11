@@ -56,7 +56,8 @@ module Barbatos
 
       def new(*args)
         show_routes
-        super
+        builder.run(super)
+        builder.to_app
       end
 
       def clear!
