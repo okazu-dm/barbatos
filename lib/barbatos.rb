@@ -1,10 +1,13 @@
 require 'barbatos/version'
 require 'barbatos/app'
+require 'barbatos/config'
 
 module Barbatos
   @app_filepath = File.expand_path caller(1)
                   .map { |path| path.split(':')[0] }
-                  .reject { |path| /barbatos|kernel_require/ =~ path }.first
+                  .reject { |path| %r{barbatos(?!/example|/test)|kernel_require} =~ path }.first
+
+  Barbatos::Config.instance.reset(File.dirname(@app_filepath))
 
   def self.invoke_by_appfile?
     invoked_filepath = File.expand_path($PROGRAM_NAME)
