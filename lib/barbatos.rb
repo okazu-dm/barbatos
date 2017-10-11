@@ -3,15 +3,15 @@ require 'barbatos/app'
 require 'barbatos/config'
 
 module Barbatos
-  @app_filepath = File.expand_path caller(1)
-                  .map { |path| path.split(':')[0] }
-                  .reject { |path| %r{barbatos(?!/example|/test)|kernel_require} =~ path }.first
-
-  Barbatos::Config.instance.reset(File.dirname(@app_filepath))
+  def self.app_filepath
+    @app_filepath ||= File.expand_path caller(1)
+      .map { |path| path.split(':')[0] }
+      .reject { |path| %r{barbatos(?!/example|/test)|kernel_require} =~ path }.first
+  end
 
   def self.invoke_by_appfile?
     invoked_filepath = File.expand_path($PROGRAM_NAME)
-    invoked_filepath == @app_filepath
+    invoked_filepath == app_filepath
   end
 
   def self.env

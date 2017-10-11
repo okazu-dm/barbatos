@@ -20,12 +20,18 @@ class AppTest < MiniTest::Test
     get '/' do
       render_text 'hello'
     end
+
+    get '/template' do
+      render 'test_template.erb', test_var: 'hello'
+    end
   end
 
   def test_get
     response = @request.get('/')
     assert response.ok?
     assert_equal 'hello', response.body
+    response = @request.get('/template')
+    assert_equal "test_var:hello\n", response.body
   end
 
   # check isolation between Base class and Subclass

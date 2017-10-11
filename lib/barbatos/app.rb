@@ -1,9 +1,11 @@
 require 'tilt'
 require 'rack'
+require 'pathname'
 require 'singleton'
 require 'forwardable'
 require 'barbatos/response'
 require 'barbatos/router'
+require 'barbatos/config'
 
 module Barbatos
   class App
@@ -38,8 +40,8 @@ module Barbatos
       @response = Barbatos::Response.new(text.to_s, status, header)
     end
 
-    def render(file, variables, status: 200, header: {})
-      template = Tilt.new(file)
+    def render(file_name, variables, status: 200, header: {})
+      template = generate_template(file_name)
       render_text(
         template.render(self, variables),
         status: status,
@@ -47,8 +49,17 @@ module Barbatos
       )
     end
 
+    def generate_template(file_name)
+      return Tilt.new(file_name) if Pathname(file_name).absolute?
+      Tilt.new(config.views + file_name)
+    end
+
     def router
       self.class.router
+    end
+
+    def config
+      self.class.config
     end
 
     class << self
@@ -57,12 +68,12 @@ module Barbatos
       def new(*args)
         show_routes
         builder.run(super)
-        builder.to_app
       end
 
       def clear!
         @router = nil
         @builder = nil
+        @config = nil
       end
 
       def router
@@ -71,6 +82,14 @@ module Barbatos
 
       def call(env)
         instance.call(env)
+      end
+
+      def config
+        @config ||= init_config
+      end
+
+      def init_config(base_path = Barbatos.app_filepath)
+        @config = Barbatos::Config.new(File.dirname(base_path))
       end
 
       def builder
